@@ -13,6 +13,7 @@ export default function App() {
   const [persons, setPersons] = useState([]);
   const [message, setMessage] = useState("");
   const [color, setColor] = useState("");
+
   // get all data
   useEffect(() => {
     phoneService
@@ -24,9 +25,11 @@ export default function App() {
   }, []);
 
   // search function
-  const filtered = persons.filter((person) => {
-    return person.name.toLowerCase().indexOf(search.toLowerCase()) !== -1;
-  });
+  const filtered = search.length
+    ? persons.filter((person) => {
+        return person.name.toLowerCase().indexOf(search.toLowerCase()) !== -1;
+      })
+    : [];
 
   const searchOnChange = (event) => {
     setSearch(event.target.value);
@@ -45,7 +48,7 @@ export default function App() {
     event.preventDefault();
 
     if (persons.map((person) => person.name).indexOf(newName) >= 0) {
-      window.alert(
+      window.confirm(
         newName +
           " is already added to phonebook, replace the old number with a new one?"
       );
@@ -54,18 +57,17 @@ export default function App() {
       phoneService
         .update(contact.id, changeContact)
         .then((response) => {
-          {
-            setPersons(
-              persons.map((person) =>
-                person.id !== contact.id ? person : response.data
-              )
-            );
-            setMessage("Changed " + contact.name);
-            setTimeout(() => {
-              setMessage(null);
-            }, 5000);
-            setColor("green");
-          }
+          console.log(response);
+          setPersons(
+            persons.map((person) =>
+              person.id !== contact.id ? person : response.data
+            )
+          );
+          setMessage("Changed " + contact.name);
+          setTimeout(() => {
+            setMessage(null);
+          }, 5000);
+          setColor("green");
         })
         .catch((err) => {
           setMessage(
