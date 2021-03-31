@@ -50,14 +50,6 @@ app.post("/api/persons", (req, res, next) => {
     });
   }
 
-  // const findSameName = persons.map((pp) => {
-  //   let compare = pp.name === person.name;
-  //   if (compare == true)
-  //     res.json({
-  //       error: 'name must be unique'
-  //     });
-  // });
-
   person
     .save()
     .then((savedPerson) => {
@@ -66,8 +58,7 @@ app.post("/api/persons", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.get("/api/persons/:id", (req, res) => {
-  console.log("try");
+app.get("/api/persons/:id", (req, res, next) => {
   Phonebook.findById(req.params.id)
     .then((person) => {
       if (person) {
@@ -96,7 +87,7 @@ app.put("/api/persons/:id", (req, res, next) => {
 
 app.delete("/api/persons/:id", (req, res, next) => {
   Phonebook.findByIdAndRemove(req.params.id)
-    .then((result) => {
+    .then(() => {
       res.status(204).end();
     })
     .catch((error) => next(error));
