@@ -1,5 +1,4 @@
 const blogsRouter = require("express").Router();
-const jwt = require("jsonwebtoken");
 const Blog = require("../models/blog");
 const User = require("../models/user");
 const middleware = require("../utils/middleware");
@@ -20,7 +19,7 @@ blogsRouter.post(
         title: request.body.title,
         author: request.body.author,
         url: request.body.url,
-        likes: request.body.likes,
+        likes: 0,
         user: user._id
       });
 
@@ -43,35 +42,61 @@ blogsRouter.get("/:id", async (request, response) => {
   }
 });
 
-blogsRouter.delete("/:id", async (request, response, next) => {
-  try {
-    const userId = request.user;
-    const blog = await Blog.findById(request.params.id);
+blogsRouter.delete(
+  "/:id",
+  middleware.tokenExtractor,
+  middleware.userExtractor,
+  async (request, response, next) => {
+    try {
+      const userId = await User.findById(request.user);
+      const blog = await Blog.findById(request.params.id);
 
-    if (blog.user.toString() === userId.toString()) {
-      await Blog.findByIdAndRemove(request.params.id);
-      response.status(204).end();
-    } else {
-      response.status(404).end();
+      if (blog.user.toString() === userId._id.toString()) {
+        await Blog.findByIdAndRemove(request.params.id);
+        response.status(204).end();
+      } else {
+        response.status(404).end();
+      }
+    } catch (exception) {
+      next(exception);
     }
-  } catch (exception) {
-    next(exception);
   }
-});
+);
 
-blogsRouter.put("/:id", (request, response, next) => {
-  const blog = {
-    title: request.body.title,
-    author: request.body.author,
-    url: request.body.url,
-    likes: request.body.likes
-  };
-
-  Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
-    .then((updatedBlog) => {
-      response.json(updatedBlog.toJSON());
-    })
-    .catch((error) => next(error));
-});
+blogsRouter.put(
+  "/:id",
+  middleware.tokenExtractor,
+  middleware.userExtractor,
+  async (request, response, next) => {
+    try {
+      const user = await User.findById(request.user);
+      const blog = await Blog.findById(request.params.id);
+      const updatedBlog = {
+        user: user._id,
+        likes: blog.likes + 1,
+        author: blog.author,
+        title: blog.title,
+        url: blog.url,
+        id: request.params.id
+      };
+      Blog.findByIdAndUpdate(
+        blog._id,
+        updatedBlog,
+        {
+          new: true
+        },
+        function(err, result) {
+          if (err) {
+            response.send(err);
+          } else {
+            response.send(result);
+          }
+        }
+      );
+    } catch (exception) {
+      next(exception);
+    }
+  }
+);
 
 module.exports = blogsRouter;

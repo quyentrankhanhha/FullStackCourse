@@ -72,11 +72,11 @@ test("lack of likes property", async () => {
   await api
     .post("/api/blogs")
     .send(blog)
-    .expect(400);
+    .expect(200);
 
   const blogsAtEnd = await helper.blogsInDb();
 
-  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
 });
 
 test("lack of title and url property", async () => {
