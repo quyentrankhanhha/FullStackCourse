@@ -9,6 +9,7 @@ export default function BlogForm(props) {
         <div>
           <label htmlFor='title'>Title</label>
           <input
+            id='title'
             name='title'
             value={props.newTitle}
             onChange={props.handleTitleChange}
@@ -17,6 +18,7 @@ export default function BlogForm(props) {
         <div>
           <label htmlFor='author'>Author</label>
           <input
+            id='author'
             name='author'
             value={props.newAuthor}
             onChange={props.handleAuthorChange}
@@ -25,12 +27,13 @@ export default function BlogForm(props) {
         <div>
           <label htmlFor='url'>Url</label>
           <input
+            id='url'
             name='url'
             value={props.newUrl}
             onChange={props.handleUrlChange}
           />
         </div>
-        <button>create</button>
+        <button id='addBlogBtn'>create</button>
       </form>
     </div>
   )

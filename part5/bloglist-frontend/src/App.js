@@ -90,7 +90,7 @@ const App = () => {
         setNewAuthor('')
         setNewTitle('')
         setNewUrl('')
-        setErrorMessage(`a new blog ${newTitle} by ${newAuthor} added`)
+        setErrorMessage(`a new blog by ${newAuthor} added`)
         blogFormRef.current.toggleVisibility()
       },
       (err) => {
@@ -119,6 +119,7 @@ const App = () => {
       blogService.deleteOne(blog.id)
       const newBlogs = blogs.filter((el) => el.id !== blog.id)
       setBlogs(newBlogs)
+      setErrorMessage('')
     }
   }
 
@@ -151,15 +152,16 @@ const App = () => {
           handleUrlChange={({ target }) => setNewUrl(target.value)}
         ></BlogForm>
       </Togglable>
-
-      {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleLike={handleLike}
-          handleDelete={handleDelete}
-        ></Blog>
-      ))}
+      <div id='blogs'>
+        {blogs.map((blog) => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            handleLike={handleLike}
+            handleDelete={handleDelete}
+          ></Blog>
+        ))}
+      </div>
     </div>
   )
 
